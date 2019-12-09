@@ -2,8 +2,10 @@ package cn.brucemaa.springboot.template.repository;
 
 import cn.brucemaa.springboot.template.entity.AbstractFakeDeleteEntity;
 import org.springframework.data.jpa.repository.Modifying;
-import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.NoRepositoryBean;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Optional;
 
 /**
  * projectName:spring-boot-template
@@ -17,12 +19,18 @@ public interface FakeDeleteRepository<T extends AbstractFakeDeleteEntity, ID> ex
 
     /**
      * 数据假删除
-     * TODO 主键不能写死
+     * 先根据主键查出数据，再修改字段值
      * @param id 数据主键
      */
     @Override
+    @Transactional(rollbackFor = RuntimeException.class)
     @Modifying
-    @Query("update #{#entityName} e set e.isDeleted = true where e.templateId = :id")
-    void deleteById(ID id);
+    default void deleteById(ID id) {
+        Optional<T> optional = findById(id);
+        if (optional.isPresent()) {
+            T t = optional.get();
+            t.setIsDeleted(true);
+        }
+    };
 
 }
