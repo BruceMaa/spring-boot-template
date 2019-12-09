@@ -5,6 +5,7 @@ import org.springframework.data.domain.AuditorAware;
 import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 
 import java.util.Optional;
+import java.util.Random;
 
 /**
  * projectName:spring-boot-template
@@ -18,7 +19,7 @@ import java.util.Optional;
 public class JpaAuditorAware implements AuditorAware<Long> {
     @Override
     public Optional<Long> getCurrentAuditor() {
-        // 获取当前登陆人
-        return Optional.of(1L);
+        // TODO 获取当前登陆人，目前是随机数，应用时根据自己需要修改
+        return Optional.of((long) (new Random().nextDouble() * 9) + 1);
     }
 }
